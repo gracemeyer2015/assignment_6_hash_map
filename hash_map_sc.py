@@ -123,19 +123,22 @@ class HashMap:
 
 
         self._size = 0
-        for i in range(self._capacity):
+        old_capacity = self._capacity
+        self._capacity = new_capacity
+
+        for i in range(old_capacity):
             bucket = self._buckets.get_at_index(i)
 
             #available because of linked list iterator
             for node in bucket:
                 hash = self._hash_function(node.key)
-                index = hash % new_capacity
+                index = hash % self._capacity
                 new_buckets.get_at_index(index).insert(node.key, node.value)
                 self._size += 1
 
 
         self._buckets = new_buckets
-        self._capacity = new_capacity
+
 
 
 
