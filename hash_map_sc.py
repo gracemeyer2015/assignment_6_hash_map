@@ -113,11 +113,16 @@ class HashMap:
         if new_capacity < 1:
             return
 
+
+
         if  not self._is_prime(new_capacity):
 
             self._capacity = self._next_prime(new_capacity)
         else:
             self._capacity = new_capacity
+
+        if self._size> new_capacity:
+            self._capacity = self._next_prime(self._size)
 
         new_buckets = DynamicArray()
         for i in range(self._capacity):
@@ -125,7 +130,7 @@ class HashMap:
             new_buckets.append(bucket)
 
 
-        self._size = 0
+
         for i in range(self._buckets.length()):
             bucket = self._buckets.get_at_index(i)
 
@@ -134,10 +139,11 @@ class HashMap:
                 hash = self._hash_function(node.key)
                 index = hash % self._capacity
                 new_buckets.get_at_index(index).insert(node.key, node.value)
-                self._size += 1
+
 
 
         self._buckets = new_buckets
+
 
 
 
