@@ -121,6 +121,8 @@ class HashMap:
             bucket = LinkedList()
             new_buckets.append(bucket)
 
+
+        self._size = 0
         for i in range(self._capacity):
             bucket = self._buckets.get_at_index(i)
 
@@ -129,6 +131,7 @@ class HashMap:
                 hash = self._hash_function(node.key)
                 index = hash % new_capacity
                 new_buckets.get_at_index(index).insert(node.key, node.value)
+                self._size += 1
 
 
         self._buckets = new_buckets
