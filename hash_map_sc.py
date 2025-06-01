@@ -129,7 +129,7 @@ class HashMap:
                 hash = self._hash_function(node.key)
                 index = hash % new_capacity
                 new_buckets.get_at_index(index).insert(node.key, node.value)
-                self._size += 1
+
 
         self._buckets = new_buckets
         self._capacity = new_capacity
@@ -233,10 +233,10 @@ class HashMap:
         TODO: Write this implementation
         """
         self._buckets = DynamicArray()
-
+        self._size = 0
         for i in range(self._capacity):
             self._buckets.append(LinkedList())
-        self._size = 0
+
 
 
 def find_mode(da: DynamicArray) -> tuple[DynamicArray, int]:
