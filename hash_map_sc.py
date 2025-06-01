@@ -112,20 +112,21 @@ class HashMap:
         """
         if new_capacity < 1:
             return
+        old_capacity = self._capacity
 
         if  not self._is_prime(new_capacity):
-            new_capacity = self._next_prime(new_capacity)
+
+            self._capacity = self._next_prime(new_capacity)
+        else:
+            self._capacity = new_capacity
 
         new_buckets = DynamicArray()
-        for i in range(new_capacity):
+        for i in range(self._capacity):
             bucket = LinkedList()
             new_buckets.append(bucket)
 
 
         self._size = 0
-        old_capacity = self._capacity
-        self._capacity = new_capacity
-
         for i in range(old_capacity):
             bucket = self._buckets.get_at_index(i)
 
