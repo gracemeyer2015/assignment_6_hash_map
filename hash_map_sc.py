@@ -90,57 +90,149 @@ class HashMap:
 
     def put(self, key: str, value: object) -> None:
         """
-        TODO: Write this implementation
+        adds or overwrites given key with given value
         """
-        pass
+        if self.table_load() >= 1:
+            self.resize_table(self._capacity * 2)
+
+        index = self._hash_function(key) % self._capacity
+        bucket = self._buckets.get_at_index(index)
+
+        if bucket.contains(key):
+            bucket.contains(key).value = value
+        else:
+            bucket.insert(key, value)
+            self._size += 1
+
+
 
     def resize_table(self, new_capacity: int) -> None:
         """
-        TODO: Write this implementation
+        resizes the table
         """
-        pass
+        if new_capacity < 1:
+            return
+
+        new_capacity = self._next_prime(new_capacity)
+
+
+        new_buckets = DynamicArray()
+        for i in range(new_capacity):
+            bucket = LinkedList()
+            new_buckets.append(bucket)
+
+        for i in range(self._capacity):
+            bucket = self._buckets.get_at_index(i)
+
+            #available because of linked list iterator
+            for node in bucket:
+                hash = self._hash_function(node.key)
+                index = hash % new_capacity
+                new_buckets.get_at_index(index).insert(node.key, node.value)
+
+        self._buckets = new_buckets
+        self._capacity = new_capacity
+
+
+
+
+
+
+
+
+
+
+
 
     def table_load(self) -> float:
         """
-        TODO: Write this implementation
+        calculates the load factor of the hash table n total values/m buckets
         """
-        pass
+        return self._size / self._capacity
 
     def empty_buckets(self) -> int:
         """
         TODO: Write this implementation
         """
-        pass
+        count = 0
+        for i in range(self._capacity):
+            bucket = self._buckets.get_at_index(i)
+            if bucket.length() == 0:
+                count += 1
+                continue
+
+        return count
+
+
+
+
+
 
     def get(self, key: str) -> object:
         """
         TODO: Write this implementation
         """
-        pass
+        hash = self._hash_function(key)
+        index = hash % self._capacity
+        bucket = self._buckets.get_at_index(index)
+        node = bucket.contains(key)
+        if node:
+            return node.value
+        else:
+            return None
+
 
     def contains_key(self, key: str) -> bool:
         """
         TODO: Write this implementation
         """
-        pass
+        hash = self._hash_function(key)
+        index = hash % self._capacity
+        bucket = self._buckets.get_at_index(index)
+        node = bucket.contains(key)
+        if node:
+            return True
+        else:
+            return False
+
 
     def remove(self, key: str) -> None:
         """
         TODO: Write this implementation
         """
-        pass
+        if self.contains_key(key):
+            hash = self._hash_function(key)
+            index = hash % self._capacity
+            bucket = self._buckets.get_at_index(index)
+            removed = bucket.remove(key)
+            if removed:
+                self._size -= 1
+
+
+
+
+
+
+
+
 
     def get_keys_and_values(self) -> DynamicArray:
         """
         TODO: Write this implementation
         """
-        pass
+        new_buckets = DynamicArray()
+        for i in range(self._capacity):
+            bucket = self._buckets.get_at_index(i)
+            for node in bucket:
+                new_buckets.append((node.key, node.value))
+        return new_buckets
 
     def clear(self) -> None:
         """
         TODO: Write this implementation
         """
-        pass
+        self._buckets = DynamicArray()
+        self._size = 0
 
 
 def find_mode(da: DynamicArray) -> tuple[DynamicArray, int]:
@@ -150,6 +242,32 @@ def find_mode(da: DynamicArray) -> tuple[DynamicArray, int]:
     # if you'd like to use a hash map,
     # use this instance of your Separate Chaining HashMap
     map = HashMap()
+
+    max_count = 0
+    for i in range (da.length()):
+        current_val = da.get_at_index(i)
+        count = map.get(current_val)
+        if count is None:
+            count = 1
+            map.put(current_val, count)
+        else:
+            count += 1
+            map.put(current_val, count)
+
+        if count> max_count:
+            max_count = count
+
+    new_da = DynamicArray()
+    bucket_da = map.get_keys_and_values()
+    for i in range(bucket_da.length()):
+        key, value = bucket_da.get_at_index(i)
+        if value == max_count:
+            new_da.append(key)
+
+
+    return new_da, max_count
+
+
 
 
 # ------------------- BASIC TESTING ---------------------------------------- #
