@@ -113,22 +113,16 @@ class HashMap:
         if new_capacity < 1:
             return
 
+        if self._size/new_capacity > 0.75:
+            new_capacity = int(self._size*1.75)
 
+        if not self._is_prime(new_capacity):
+            new_capacity = self._next_prime(new_capacity)
 
-        if  not self._is_prime(new_capacity):
-
-            self._capacity = self._next_prime(new_capacity)
-        else:
-            self._capacity = new_capacity
-
-        if self._size> new_capacity:
-            self._capacity = self._next_prime(self._size)
 
         new_buckets = DynamicArray()
-        for i in range(self._capacity):
-            bucket = LinkedList()
-            new_buckets.append(bucket)
-
+        for i in range(new_capacity):
+            new_buckets.append(LinkedList())
 
 
         for i in range(self._buckets.length()):
@@ -137,12 +131,13 @@ class HashMap:
             #available because of linked list iterator
             for node in bucket:
                 hash = self._hash_function(node.key)
-                index = hash % self._capacity
+                index = hash % new_capacity
                 new_buckets.get_at_index(index).insert(node.key, node.value)
 
 
 
         self._buckets = new_buckets
+        self._capacity = new_capacity
 
 
 
