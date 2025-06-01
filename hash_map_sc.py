@@ -112,7 +112,6 @@ class HashMap:
         """
         if new_capacity < 1:
             return
-        old_capacity = self._capacity
 
         if  not self._is_prime(new_capacity):
 
@@ -127,7 +126,7 @@ class HashMap:
 
 
         self._size = 0
-        for i in range(old_capacity):
+        for i in range(self._buckets.length()):
             bucket = self._buckets.get_at_index(i)
 
             #available because of linked list iterator
