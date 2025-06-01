@@ -233,6 +233,9 @@ class HashMap:
         TODO: Write this implementation
         """
         self._buckets = DynamicArray()
+
+        for i in range(self._capacity):
+            self._buckets.append(LinkedList())
         self._size = 0
 
 
