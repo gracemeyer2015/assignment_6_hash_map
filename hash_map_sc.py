@@ -93,7 +93,7 @@ class HashMap:
         adds or overwrites given key with given value
         """
         if self.table_load() >= 1:
-            self.resize_table(self._size*2)
+            self.resize_table(self._capacity*2)
 
         index = self._hash_function(key) % self._capacity
         bucket = self._buckets.get_at_index(index)
