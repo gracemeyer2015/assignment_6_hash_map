@@ -156,16 +156,6 @@ class HashMap:
 
 
 
-
-
-
-
-
-
-
-
-
-
     def table_load(self) -> float:
         """
         TODO: Write this implementation
@@ -189,17 +179,18 @@ class HashMap:
         hash = self._hash_function(key)
         initial_index = hash % self._capacity
 
-
         j = 0
         while j < self._capacity:
             index = (initial_index + j ** 2) % self._capacity
             index_val = self._buckets.get_at_index(index)
+
             if index_val is None:
                 return None
             if index_val.key == key and not index_val.is_tombstone:
                 return index_val.value
 
             j+=1
+
         return None
 
 
@@ -212,12 +203,22 @@ class HashMap:
         TODO: Write this implementation
         """
         hash = self._hash_function(key)
-        index = hash % self._capacity
-        index_val = self._buckets.get_at_index(index)
-        if index_val is None or index_val.is_tombstone:
-            return False
-        else:
-            return True
+        initial_index = hash % self._capacity
+
+        j = 0
+        while j < self._capacity:
+            index = (initial_index + j ** 2) % self._capacity
+            index_val = self._buckets.get_at_index(index)
+
+            if index_val is None:
+                return False
+            if index_val.key == key and not index_val.is_tombstone:
+                return True
+
+            j+=1
+
+        return False
+
 
     def remove(self, key: str) -> None:
         """
