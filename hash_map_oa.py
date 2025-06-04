@@ -119,7 +119,7 @@ class HashMap:
         TODO: Write this implementation
         """
         if new_capacity < self._size:
-            return
+            new_capacity = self._next_prime(self._size)
 
         if not self._is_prime(new_capacity):
             new_capacity = self._next_prime(new_capacity)
