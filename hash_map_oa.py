@@ -118,8 +118,8 @@ class HashMap:
         """
         TODO: Write this implementation
         """
-        if new_capacity < self._size:
-            new_capacity = self._next_prime(self._size)
+        if self.table_load()> 0.5:
+            new_capacity = self._next_prime(int((self._capacity/0.5) + 1))
 
         if not self._is_prime(new_capacity):
             new_capacity = self._next_prime(new_capacity)
