@@ -92,7 +92,7 @@ class HashMap:
         """
         adds or overwrites given key with given value
         """
-        if self.table_load() >= 1:
+        if self.table_load() > 1:
             self.resize_table(self._capacity*2)
 
         index = self._hash_function(key) % self._capacity
