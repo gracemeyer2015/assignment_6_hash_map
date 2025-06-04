@@ -117,8 +117,8 @@ class HashMap:
         if new_capacity < 1:
             return
 
-        if self._size/new_capacity > load_factor:
-            new_capacity = int(self._size*(.75  + 1))
+        if self._size/new_capacity >= 1:
+            new_capacity = int(self._size) + 1
 
         if not self._is_prime(new_capacity):
             new_capacity = self._next_prime(new_capacity)
