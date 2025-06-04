@@ -93,13 +93,14 @@ class HashMap:
         adds or overwrites given key with given value
         """
         if self.table_load() >= 1:
-            self.resize_table(self._capacity*2)
+            self.resize_table(self._size*2)
 
         index = self._hash_function(key) % self._capacity
         bucket = self._buckets.get_at_index(index)
+        node = bucket.contains(key)
 
-        if bucket.contains(key):
-            bucket.contains(key).value = value
+        if node:
+           node.value = value
         else:
             bucket.insert(key, value)
             self._size += 1
@@ -116,6 +117,9 @@ class HashMap:
 
         if new_capacity < 1:
             return
+
+        if new_capacity < self._capacity:
+            new_capacity = self._next_prime(self._size*2)
 
 
         if not self._is_prime(new_capacity):
