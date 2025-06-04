@@ -92,7 +92,7 @@ class HashMap:
         """
         adds or overwrites given key with given value
         """
-        if self.table_load() > 1:
+        if self.table_load() >= 1:
             self.resize_table(self._capacity*2)
 
         index = self._hash_function(key) % self._capacity
@@ -114,31 +114,34 @@ class HashMap:
         load_factor = self.table_load()
 
 
-        if new_capacity < self._size or new_capacity < 1:
-            new_capacity = self._next_prime(self._size)
+        if new_capacity < 1:
+           return
 
-        elif not self._is_prime(new_capacity):
+        if not self._is_prime(new_capacity):
             new_capacity = self._next_prime(new_capacity)
 
-
-        new_buckets = DynamicArray()
-        for i in range(new_capacity):
-            new_buckets.append(LinkedList())
+        old_capacity = self._capacity
+        old_buckets = self._buckets
 
 
-        for i in range(self._buckets.length()):
-            bucket = self._buckets.get_at_index(i)
+        self._capacity = new_capacity
+        self._size = 0
+        self._buckets = DynamicArray()
+
+
+
+        for i in range(self._capacity):
+            self._buckets.append(LinkedList())
+
+
+        for i in range(old_capacity):
+            bucket = old_buckets.get_at_index(i)
 
             #available because of linked list iterator
             for node in bucket:
-                hash = self._hash_function(node.key)
-                index = hash % new_capacity
-                new_buckets.get_at_index(index).insert(node.key, node.value)
+                self.put(node.key, node.value)
 
 
-
-        self._buckets = new_buckets
-        self._capacity = new_capacity
 
 
 

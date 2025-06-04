@@ -90,7 +90,7 @@ class HashMap:
         """
         checks every slot until key is found, two tombstones are found, or it reaches none
         """
-        if self.table_load() > 0.5:
+        if self.table_load() >= 0.5:
             self.resize_table(self._capacity * 2)
         hash = self._hash_function(key)
         initial_index = hash % self._capacity
