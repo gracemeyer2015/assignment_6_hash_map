@@ -114,12 +114,8 @@ class HashMap:
         load_factor = self.table_load()
 
 
-
-        if new_capacity < 1:
-            return
-
-        if new_capacity < self._capacity:
-            new_capacity = self._next_prime(self._size*2)
+        if new_capacity < self._size:
+            new_capacity = self._next_prime(self._capacity*2)
 
 
         if not self._is_prime(new_capacity):
