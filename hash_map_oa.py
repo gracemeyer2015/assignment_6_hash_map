@@ -231,12 +231,13 @@ class HashMap:
         for j in range(self._capacity):
             index = (initial_index + j ** 2) % self._capacity
             initial_val = self._buckets.get_at_index(index)
-            if initial_val is None or initial_val.is_tombstone:
+            if initial_val is None:
                 return
-            if initial_val.key == key:
+            if initial_val.key == key and not initial_val.is_tombstone:
                 initial_val.is_tombstone = True
                 self._size -= 1
                 return
+
 
 
     def get_keys_and_values(self) -> DynamicArray:
