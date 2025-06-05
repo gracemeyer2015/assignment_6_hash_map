@@ -137,22 +137,10 @@ class HashMap:
 
         for i in range(old_capacity):
             index_val = old_buckets.get_at_index(i)
-
             if index_val is not None and not index_val.is_tombstone:
-                key, value = index_val.key, index_val.value
-                initial_index = self._hash_function(key) % self._capacity
-
-                j = 0
-                while j < self._capacity:
-                    index = (initial_index + j ** 2) % self._capacity
+                self.put(index_val.key, index_val.value)
 
 
-                    if self._buckets.get_at_index(index) is None:
-                        self._buckets.set_at_index(index, HashEntry(key, value))
-                        self._size += 1
-                        break
-
-                    j += 1
 
 
 

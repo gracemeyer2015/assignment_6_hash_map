@@ -111,9 +111,6 @@ class HashMap:
         """
         resizes the table
         """
-        load_factor = self.table_load()
-
-
         if new_capacity < 1:
            return
 
