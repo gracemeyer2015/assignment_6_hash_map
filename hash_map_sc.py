@@ -1,9 +1,16 @@
-# Name:
-# OSU Email:
+# Name: Grace Meyer
+# OSU Email: meyerg3@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
-# Description:
+# Assignment: 6
+# Due Date: 06/05/25
+# Description: the separate chaining implementation of a hash map that has buckets which are the indices of the dynamic array
+# containing linked lists, the linked lists form when collisions happen to make it so that no value is overwritten, it has
+# methods put to add values or key value pairs to the hash map, resize table to fit updating size which is called within put,
+# Table_load method is called in put to keep the size capacity ratio at most 1, empty_buckets counts number of empty buckets
+# get, contains_key, and remove use a key parameter to return a value or boolean, or to remove a value from the hash map
+# get keys and values gives a clear picture of what keys and values are represented in the hash map with one value per key
+# find_mode is a function not within the HashMap class but uses the hashmap class by building one based on a given da to
+# find the mode of a da
 
 
 from a6_include import (DynamicArray, LinkedList,
@@ -90,8 +97,15 @@ class HashMap:
 
     def put(self, key: str, value: object) -> None:
         """
-        adds or overwrites given key with given value
+         Calcs hash index using key(string), the hash function, and the capacity.
+         The variable bucket is the linked list at the given hash index that holds
+         the key value pairs that map to the same hash index. If the key exists within the linked list
+         the value is updated, if not the key and value are added as a pair, node of the linked list
+
+        :param key: key is a string used to calculate where a given value or key value pair is to be stored
+        :param value: value associated with key to be added
         """
+        #esnures that the load factor of self._buckets stays at or below 1
         if self.table_load() >= 1:
             self.resize_table(self._capacity*2)
 
@@ -99,6 +113,7 @@ class HashMap:
         bucket = self._buckets.get_at_index(index)
         node = bucket.contains(key)
 
+        #if the key already exists assign it the new value, if not, add it to bucket using insert
         if node:
            node.value = value
         else:
@@ -109,31 +124,31 @@ class HashMap:
 
     def resize_table(self, new_capacity: int) -> None:
         """
-        resizes the table
+        Is called in put to increase the capacity of the hash map when load factor is >= 1. Creates a new dynamic array
+        of empty linked lists, uses put to rehash keys and store key value pairs more evenly based on capacity
+
+        :param new_capacity: new capacity of the hash map given in put as 2*capacity's next prime if not prime
         """
+        #requested capacity is invalid
         if new_capacity < 1:
            return
 
         if not self._is_prime(new_capacity):
             new_capacity = self._next_prime(new_capacity)
 
+        #save original data and capacity to reference in building new hashmap of new capacity
         old_capacity = self._capacity
         old_buckets = self._buckets
-
-
         self._capacity = new_capacity
         self._size = 0
         self._buckets = DynamicArray()
 
-
-
         for i in range(self._capacity):
             self._buckets.append(LinkedList())
 
-
+        #gets values from original bucket's linked lists and rehashes/stores values
         for i in range(old_capacity):
             bucket = old_buckets.get_at_index(i)
-
             #available because of linked list iterator
             for node in bucket:
                 self.put(node.key, node.value)
@@ -161,7 +176,10 @@ class HashMap:
 
     def empty_buckets(self) -> int:
         """
-        TODO: Write this implementation
+        Gives the number of buckets that are empty by using length method for linked list,
+        checking if the length is 0
+
+        :return: int, number of empty buckets
         """
         count = 0
         for i in range(self._capacity):
@@ -174,12 +192,12 @@ class HashMap:
 
 
 
-
-
-
     def get(self, key: str) -> object:
         """
-        TODO: Write this implementation
+        given the key it uses hash function to find which bucket the key would be in,
+        uses contains to check if the bucket has a value with that key
+
+        :param key: key to look for in hash map
         """
         hash = self._hash_function(key)
         index = hash % self._capacity
@@ -193,7 +211,12 @@ class HashMap:
 
     def contains_key(self, key: str) -> bool:
         """
-        TODO: Write this implementation
+        similar to get but instead of returning the value it returns boolean value based if key is found
+        both use contains from the linked list methods
+
+        :param key: key to look for in hash map
+
+        :return: boolean true if key exists false otherwise
         """
         hash = self._hash_function(key)
         index = hash % self._capacity
@@ -207,7 +230,10 @@ class HashMap:
 
     def remove(self, key: str) -> None:
         """
-        TODO: Write this implementation
+        removes a value given a key from the hash map uses remove from the linked list class that
+        returns boolean value if true is returned decreases size by 1
+
+        :param key: key to look for in hash map
         """
         if self.contains_key(key):
             hash = self._hash_function(key)
@@ -227,7 +253,9 @@ class HashMap:
 
     def get_keys_and_values(self) -> DynamicArray:
         """
-        TODO: Write this implementation
+        creates dynamic array and appends all key value pairs to the da
+
+        :return: dynamic array with all the key value pairs of the hash map
         """
         new_buckets = DynamicArray()
         for i in range(self._capacity):
@@ -238,7 +266,7 @@ class HashMap:
 
     def clear(self) -> None:
         """
-        TODO: Write this implementation
+        sets self._buckets to new dynamic array appends empty linked lists resets size to 0
         """
         self._buckets = DynamicArray()
         self._size = 0
@@ -249,13 +277,20 @@ class HashMap:
 
 def find_mode(da: DynamicArray) -> tuple[DynamicArray, int]:
     """
-    TODO: Write this implementation
-    """
-    # if you'd like to use a hash map,
-    # use this instance of your Separate Chaining HashMap
-    map = HashMap()
+    creates a hashmap from the given dynamic array using the values of the array as keys and the amount of times
+    the key/value occurs as the value, then makes a new dynamic array of the keys with values that
+    are equal to the max count, found in the process of making the hashmap.
 
+    :param da: dynamic array with objects that will become the keys of the hash map
+
+    :return tuple DynamicArray, int: the da has the mode values used as keys in hash map and max count
+    """
+
+    # initializes use of hash map and a max count var
+    map = HashMap()
     max_count = 0
+
+    #forms hashmap by adding objs as keys and counting the occurences of the objs within given da
     for i in range (da.length()):
         current_val = da.get_at_index(i)
         count = map.get(current_val)
@@ -266,9 +301,11 @@ def find_mode(da: DynamicArray) -> tuple[DynamicArray, int]:
             count += 1
             map.put(current_val, count)
 
+        #stores the highest count of repeats of an obj from original da
         if count> max_count:
             max_count = count
 
+    #creates new dynamic array to store the mode or modes
     new_da = DynamicArray()
     bucket_da = map.get_keys_and_values()
     for i in range(bucket_da.length()):

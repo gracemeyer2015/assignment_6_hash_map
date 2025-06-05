@@ -1,9 +1,20 @@
-# Name:
-# OSU Email:
+# Name: Grace Meyer
+# OSU Email: meyerg3@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
-# Description:
+# Assignment: 6
+# Due Date: 06/05/25
+# Description: creates a hash map using a dynamic array that accepts HashEntry instances/Objects at its given indices
+#with data members self._bucket holding the data entered. This implementation does not rely on the linked list class as
+#with open adddressing we use some form of probing to find the next valid index of entry, in this case quadratic probing is used
+# the put method attempts to add a HashEntry object to the dynamic array, put calls resize_table which creates a new table of
+# the given argument passed to resize as suggested capacity, resize also calls put when building the new dynamic array of
+# new capacity, table load gives the load factor to be monitored within put, empty_buckets gives the number of blank
+#slots in the array, get returns the value given a key passed as argument, contains_key returns a boolean value that gives
+#whether that key is already in the hashmap, remove uses a key to search for pair to remove, get_keys_and_values returns
+# a dynamic array with all the key value pairs found in the hashmap at the given time, clear resets the self._buckets to
+# an empty dynamic array/emptied hashmap clearing original contents of self._buckets, finally I have iter and next within
+#the hashmap class that make the hashmap iterable
+
 from unittest import skipIf
 
 from a6_include import (DynamicArray, DynamicArrayException, HashEntry,
@@ -88,27 +99,37 @@ class HashMap:
 
     def put(self, key: str, value: object) -> None:
         """
-        checks every slot until key is found, two tombstones are found, or it reaches none
+        Uses open addressing to add a key value pair or to update the given key's value
+        if it already is found in the hash map
+
+        :param key: key to add and to hash
+        :param value: value to add as a pair with given key
         """
+        #for open addressing load factor is to be at most 0.5 cause no Linked list
         if self.table_load() >= 0.5:
             self.resize_table(self._capacity * 2)
+
         hash = self._hash_function(key)
         initial_index = hash % self._capacity
 
         j = 0
+        # j starts at 0 j = 0 represents first attempt to find right index with quadratic probing
         while j < self._capacity:
             index = (initial_index + j ** 2) % self._capacity
             initial_val = self._buckets.get_at_index(index)
 
+            # if the given index does not already hold a hashEntry instance the new instance is added
             if initial_val is None or initial_val.is_tombstone:
                 self._buckets.set_at_index(index, HashEntry(key, value))
                 self._size += 1
                 return
 
+            # if the key is found the value is overwritten for the given key
             if initial_val.key == key:
                 self._buckets.set_at_index(index, HashEntry(key, value))
                 return
 
+            #moves to next probing attempt if conditions arent met
             j += 1
 
         return
@@ -116,8 +137,12 @@ class HashMap:
 
     def resize_table(self, new_capacity: int) -> None:
         """
-        TODO: Write this implementation
+        called within put to ensure the size to capacity ration remains at 0.50 and lower, creates a new
+        DA and rehashes keys given the new usually larger capacity
+
+        :param new_capacity: new capacity request
         """
+        #capacity request is invalid
         if new_capacity < self._size or new_capacity < 1:
             return
 
@@ -135,6 +160,7 @@ class HashMap:
             self._buckets.append(None)
         self._size = 0
 
+        #uses put to rehash and insert new values or key value pairs in the correct spot
         for i in range(old_capacity):
             index_val = old_buckets.get_at_index(i)
             if index_val is not None and not index_val.is_tombstone:
@@ -146,13 +172,15 @@ class HashMap:
 
     def table_load(self) -> float:
         """
-        TODO: Write this implementation
+        calculates the load factor size over capacity of the hash map
         """
         return self._size/self._capacity
 
     def empty_buckets(self) -> int:
         """
-        TODO: Write this implementation
+        goes through dynamic array seeing if values are none returns count of empty buckets
+
+        :return: count of empty buckets
         """
         count = 0
         for i in range(self._capacity):
@@ -162,11 +190,17 @@ class HashMap:
 
     def get(self, key: str) -> object:
         """
-        TODO: Write this implementation
+        finds the value of a key value pair based on the key argument given uses quadratic probing to find
+        where the key could be if it is not the first initial value
+
+        :param key: key to look for in hash map
+
+        :return: value of a key value pair given the key as parameter
         """
         hash = self._hash_function(key)
         initial_index = hash % self._capacity
 
+        #same quadratic probing method used as is in put
         j = 0
         while j < self._capacity:
             index = (initial_index + j ** 2) % self._capacity
@@ -188,7 +222,12 @@ class HashMap:
 
     def contains_key(self, key: str) -> bool:
         """
-        TODO: Write this implementation
+        hashes key to find index to start probing searching at max the entire capacity of the array which
+        will only be at most half full returns true if key is found in hash map
+
+        :param key: key to look for in hash map
+
+        :return: True if key is found in hash map, false if not found
         """
         hash = self._hash_function(key)
         initial_index = hash % self._capacity
@@ -210,7 +249,10 @@ class HashMap:
 
     def remove(self, key: str) -> None:
         """
-        TODO: Write this implementation
+        Removes a value from the hash map by setting the index to be a tombstone if the key argument is found within
+        the hash map
+
+        :param key: key to remove from hash map/ to find index to set to tombstone is true
         """
 
         hash = self._hash_function(key)
@@ -230,7 +272,11 @@ class HashMap:
 
     def get_keys_and_values(self) -> DynamicArray:
         """
-        TODO: Write this implementation
+        Collects the key value pairs of the hash map by going through indices of capacity checking if
+        there is a key and value there if there is it is added to the dynamic array that is returned
+        at the end
+
+        :return DynamicArray: containing key and value pairs of the hash map
         """
         val_array = DynamicArray()
         for i in range(self._capacity):
@@ -242,7 +288,7 @@ class HashMap:
 
     def clear(self) -> None:
         """
-        TODO: Write this implementation
+        Sets the data storage data member self._buckets to a new DA adds the value none for each capacity slot
         """
         self._buckets = DynamicArray()
         for i in range(self._capacity):
@@ -253,14 +299,17 @@ class HashMap:
 
     def __iter__(self):
         """
-        TODO: Write this implementation
+        Initializes HashMap class as its own iterator, sets an index starting at 0 to allow for the
+        use of iterators as for loops
         """
         self._index = 0
         return self
 
     def __next__(self):
         """
-        TODO: Write this implementation
+        calls to next return the next valid hash entry of the given instance of the hash map
+        it is made to skip over none and tombstone slots and return all valid entries
+        stopIteration is raised when there are no longer any valid entries
         """
         while self._index < self._capacity:
             initial_val = self._buckets.get_at_index(self._index)
